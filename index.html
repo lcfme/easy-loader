@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+</head>
+
+<body>
+    <video id="test" autoplay></video>
+    <div id="start">开始</div>
+    <div id="end">结束</div>
+    <script>
+        var videoElem = document.getElementById('test');
+        var startElem = document.getElementById('start');
+        var endElem = document.getElementById('end');
+        startElem.onclick = function () {
+            recorder.start();
+        }
+        endElem.onclick = function () {
+            recorder.stop();
+        }
+        var recorder;
+        navigator.getUserMedia({ audio: true, video: true }, function (stream) {
+            videoElem.srcObject = stream;
+            recorder = new easyRecorder(stream);
+            recorder.on('data', data => {
+                var file = new FileReader();
+                file.readAsArrayBuffer(data);
+                file.onloadend = function () {
+                    var formData = new FormData();
+                    formData.append('file', data);
+                    fetch('/test', {
+                        method: 'POST',
+                        headers: {
+                        },
+                        body: formData
+                    });
+                }
+            });
+        }, function (err) {
+            debugger;
+        })
+    </script>
+</body>
+
+</html>
